@@ -80,17 +80,16 @@ form {
   .page-heading {
     @apply flex flex-col items-center gap-8 max-w-4xl text-center max-sm:gap-4;
   }
-  .resumes-section {
-    @apply flex flex-wrap max-md:flex-col max-md:gap-4 gap-6 items-start max-md:items-center w-full max-w-[1850px] justify-evenly;
-  }
+.resumes-section {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-[1500px] mx-auto px-4;
+}
 
-  .resume-card {
-    @apply flex flex-col gap-8 h-[560px] w-[350px] lg:w-[430px] xl:w-[490px] bg-white rounded-2xl p-4;
-  }
-
-  .resume-card-header {
-    @apply flex flex-row gap-2 justify-between min-h-[110px] max-sm:flex-col items-center max-md:justify-center max-md:items-center;
-  }
+.resume-card {
+  @apply flex flex-col gap-6 w-full h-auto bg-white rounded-2xl p-4 overflow-hidden;
+}
+.resume-card-header {
+ @apply flex flex-row gap-2 justify-between items-center;
+}
 
   .feedback-section {
     @apply flex flex-col gap-8 w-1/2 px-8 max-lg:w-full py-6;
@@ -108,8 +107,8 @@ form {
     @apply flex flex-col gap-2 w-full items-start;
   }
 
-  .uplader-drag-area {
-    @apply relative p-8 text-center transition-all duration-700 cursor-pointer bg-white rounded-2xl min-h-[208px];
+  .uploader-drag-area {
+    @apply relative p-8 text-center transition-all duration-700 cursor-pointer bg-white rounded-2xl min-h-[150px];
   }
   .uploader-selected-file {
     @apply flex items-center justify-between p-3 bg-gray-50 rounded-2xl;
@@ -149,4 +148,4 @@ form {
   to {
     opacity: 1;
   }
-}S
+}
