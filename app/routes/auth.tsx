@@ -15,10 +15,7 @@ const navigate = useNavigate()
 useEffect(()=> {
     if (auth.isAuthenticated) navigate(next);
     },
-    [auth.isAuthenticated , next])
-
-
-
+    [auth.isAuthenticated , next, navigate])
 
   return (
     <main className="bg-[url('/images/bg-auth.svg')] bg-cover bg-center min-h-screen flex items-center justify-center px-4">
@@ -37,12 +34,12 @@ useEffect(()=> {
             <>
 
           {auth.isAuthenticated ? (
-            <button className="auth-button" onClick={auth.SignOut}>
+            <button className="auth-button" onClick={auth.signOut}>
                 <p>Log Out</p>
             </button> 
 
             ):(
-                 <button className="auth-button" onClick={auth.SignIn}>
+                 <button className="auth-button" onClick={auth.signIn}>
                 <p>Log In</p>
                 </button> )
           }
