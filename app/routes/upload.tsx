@@ -1,34 +1,121 @@
-import React from 'react'
-import Navbar from "~/components/Navbar";
-import {useState} from "react";
+import { useState } from "react";
 
-const upload = () => {
-    const [isProcessing , setIsProcessing]= useState(false);
-    const [statusText ,setStatusText] = useState('');
+import {Navbar} from "../Components/Navbar";
+
+const Upload = () => {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [statusText, setStatusText] = useState("");
+
+const handleSubmit = (e: SubmitEvent) => {
+  e.preventDefault();
+
+  setIsProcessing(true);
+  setStatusText("Uploading your resume...");
+
+  setTimeout(() => {
+    setStatusText("Analyzing Resume...");
+  }, 2000);
+};
+
   return (
-     <main className="bg-[url('/images/bg-main.svg')] bg-cover bg-center min-h-screen">
-          <Navbar />
-<section className="main-section">
-    <div className="page-heading">
-        <h1>Smart feedback for your dream job </h1>
-        {isProcessing ? (
+    <main className="bg-[url('/images/bg-main.svg')] bg-cover bg-center min-h-screen">
+      <Navbar />
+
+      <section className="main-section">
+        <div className="page-heading mt-6 py-12">
+          <h1>Smart Feedback for Your <br></br>Dream Job</h1>
+
+          {isProcessing ? (
             <>
-            <h2>{statusText}</h2>
-            <img src='/images/resume-scan.gif' className="w-full"/>
+              <h2>{statusText}</h2>
+
+              <img
+                src="/images/resume-scan.gif"
+                alt="Scanning Resume"
+                className="w-full max-w-md mx-auto mt-6"
+              />
             </>
-        ):( 
-            <h2>Drop your Resume for an ATS scrore and improvement tips</h2>
-        )}
-        {!isProcessing}
+          ) : (
+            <>
+              <h2>
+                Drop your Resume for an ATS score and improvement tips
+              </h2>
 
-    </div>
-</section>
+              <form
+                id="upload-form"
+                onSubmit={handleSubmit}
+                className="flex flex-col gap-4 mt-8 max-w-xl mx-auto"
+              >
+                <div className="form-div">
+                  <label htmlFor="company-name">Company Name</label>
+
+                  <input
+                    type="text"
+                    id="company-name"
+                    name="company-name"
+                    placeholder="Company Name"
+                    className="w-full"
+                    required
+                  />
+                </div>
+
+                <div className="form-div">
+                  <label htmlFor="job-title">Job Title</label>
+
+                  <input
+                    type="text"
+                    id="job-title"
+                    name="job-title"
+                    placeholder="Frontend Developer"
+                    className="w-full"
+                    required
+                  />
+                </div>
+
+                <div className="form-div">
+                  <label htmlFor="job-description">Job Description</label>
+
+                  <textarea rows={5}
+                    id="job-description"
+                    name="job-description"
+                    placeholder="Job Description"
+                    className="w-full"
+                    required
+                  />
+                </div>
+
+                 <div className="form-div">
+                  <label htmlFor="uploader"> Upload Resume</label>
+                  <div>Uploader</div>
+                  </FileUploader>
+                  </div>
+
+                  <button className="primary-button" type="submit">
+                    Analyze Resume
+                    </button>
+
+                {/* <div className="form-div">
+                  <label htmlFor="resume">Resume</label>
+
+                  <input
+                    type="file"
+                    id="resume"
+                    name="resume"
+                    accept=".pdf"
+                    className="w-full"
+                    required
+                  />
+                </div> */}
+                
 
 
+              </form>
+            </>
+          )}
+        </div>
+      </section>
+    </main>
+  );
+};
 
-
-          </main>
-  
-)};
-
-export default upload;
+export default Upload;
