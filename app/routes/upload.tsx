@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import {FileUploader} from "../Components/FileUploader";
 import {Navbar} from "../Components/Navbar";
 
 const Upload = () => {
