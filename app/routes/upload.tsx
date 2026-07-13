@@ -1,12 +1,18 @@
 import { useState } from "react";
-import {FileUploader} from "../Components/FileUploader";
+import type { FormEvent } from "react";;
+import FileUploader from "~/Components/FileUploader";
 import {Navbar} from "../Components/Navbar";
 
 const Upload = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusText, setStatusText] = useState("");
+  const [file, setFile] = useState<File | null>(null);
 
-const handleSubmit = (e: SubmitEvent) => {
+  const handleFileSelect = (file: File | null) => {
+    setFile(file);
+  };
+
+const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
   e.preventDefault();
 
   setIsProcessing(true);
@@ -86,28 +92,15 @@ const handleSubmit = (e: SubmitEvent) => {
 
                  <div className="form-div">
                   <label htmlFor="uploader"> Upload Resume</label>
-                  <div>Uploader</div>
-                  </FileUploader>
+                  <FileUploader onFileSelect={handleFileSelect}/>
+
+                 
                   </div>
+    
 
                   <button className="primary-button" type="submit">
                     Analyze Resume
                     </button>
-
-                {/* <div className="form-div">
-                  <label htmlFor="resume">Resume</label>
-
-                  <input
-                    type="file"
-                    id="resume"
-                    name="resume"
-                    accept=".pdf"
-                    className="w-full"
-                    required
-                  />
-                </div> */}
-                
-
 
               </form>
             </>
