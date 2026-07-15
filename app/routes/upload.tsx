@@ -2,8 +2,11 @@ import { useState } from "react";
 import type { FormEvent } from "react";;
 import FileUploader from "~/Components/FileUploader";
 import {Navbar} from "../Components/Navbar";
+import { useNavigate } from "react-router";
 
 const Upload = () => {
+  const {auth, isLoading, fs, ai, kv } = useAppContext();
+  const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusText, setStatusText] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -12,16 +15,51 @@ const Upload = () => {
     setFile(file);
   };
 
-const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+
+  const form = e.currentTarget.closest('form');
+  if(!form) return;
+  const formData = new FormData(form);
+  const companyName = formData.get("company-name") as string;
+  const jobTitle = formData.get("job-title") as string;
+  const jobDescription = formData.get("job-description") as string;
+
+  if (!file) return;
+  handleAnalyze({companyName, jobTitle, jobDescription , file});
+
+
+  const handleAnalyze = async ({
+  companyName,
+  jobTitle,
+  jobDescription,
+  file,
+}: {
+  companyName: string;
+  jobTitle: string;
+  jobDescription: string;
+  file: File;
+}) => {
 
   setIsProcessing(true);
-  setStatusText("Uploading your resume...");
+  setStatusText("Uploading the file...");
 
-  setTimeout(() => {
-    setStatusText("Analyzing Resume...");
-  }, 2000);
-};
+  const uploadFile = await fs.upload([file]);
+  if (!uploadFile) {
+    return setStatusText("File upload failed. Please try again.");
+
+    setStatusText("Converting to image ...");
+    const imageFile = await fs.convertPdfToImage(file);
+    if (!imageFile.file) return setStatusText("Failed to convert PDF to image.");
+    
+     setStatusText("Uploading the file...");
+    const uploadImage = await fs.upload([imageFile.file]);
+    if (!uploadImage) return setStatusText("Error uploading image.");
+     setStatusText("Preparing data");
+    }
+  }
+   
+} 
+const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
 
   return (
     <main className="bg-[url('/images/bg-main.svg')] bg-cover bg-center min-h-screen">
