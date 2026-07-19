@@ -4,11 +4,11 @@ import FileUploader from "~/Components/FileUploader";
 import { Navbar } from "../Components/Navbar";
 import { useNavigate } from "react-router";
 import { generateUUID } from "~/lib/utils";
-import { prepareInstructions } from "~/constants";
-// import { useAppContext } from "~/context/AppContext";
+import { AIResponseFormat, prepareInstructions } from "~/constants";
+import { usePuterStore } from "~/lib/puter";
 
 const Upload = () => {
-  const { fs, ai, kv } = useAppContext();
+  const { fs, ai, kv } = usePuterStore();
 
   const navigate = useNavigate();
 
@@ -24,11 +24,13 @@ const Upload = () => {
     companyName,
     jobTitle,
     jobDescription,
+    AIResponseFormat
     file,
   }: {
     companyName: string;
     jobTitle: string;
     jobDescription: string;
+    AIResponseFormat: any;
     file: File;
   }) => {
     setIsProcessing(true);
@@ -38,6 +40,7 @@ const Upload = () => {
 
     if (!uploadFile) {
       setStatusText("File upload failed. Please try again.");
+      setIsProcessing(false);
       return;
     }
 
@@ -47,6 +50,7 @@ const Upload = () => {
 
     if (!imageFile.file) {
       setStatusText("Failed to convert PDF to image.");
+      setIsProcessing(false);
       return;
     }
 
@@ -56,6 +60,7 @@ const Upload = () => {
 
     if (!uploadImage) {
       setStatusText("Error uploading image.");
+      setIsProcessing(false);
       return;
     }
 
@@ -63,15 +68,16 @@ const Upload = () => {
 
     const uuid = generateUUID();
 
-    const data = {
-      id: uuid,
-      resumePath: uploadFile[0].path,
-      imagePath: uploadImage[0].path,
-      companyName,
-      jobTitle,
-      jobDescription,
-      feedback: "",
-    };
+  const data = {
+  id: uuid,
+  resumePath: uploadFile[0].path,
+  imagePath: uploadImage[0].path,
+  companyName,
+  jobTitle,
+  jobDescription,
+  AIResponseFormat,
+  feedback: null as any,
+};
 
     await kv.set(`resume:${uuid}`, JSON.stringify(data));
 
@@ -83,11 +89,13 @@ const Upload = () => {
         companyName,
         jobTitle,
         jobDescription,
+        AIResponseFormat
       })
     );
 
     if (!feedback) {
       setStatusText("Error analyzing resume.");
+      setIsProcessing(false);
       return;
     }
 
@@ -111,7 +119,6 @@ const Upload = () => {
     e.preventDefault();
 
     const form = e.currentTarget;
-
     const formData = new FormData(form);
 
     const companyName = formData.get("company-name") as string;
