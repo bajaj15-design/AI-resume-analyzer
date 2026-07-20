@@ -4,8 +4,9 @@ import FileUploader from "~/Components/FileUploader";
 import { Navbar } from "../Components/Navbar";
 import { useNavigate } from "react-router";
 import { generateUUID } from "~/lib/utils";
-import { AIResponseFormat, prepareInstructions } from "~/constants";
+import { prepareInstructions } from "~/constants";
 import { usePuterStore } from "~/lib/puter";
+import { convertPdfToImage } from "~/lib/pdfToimage";
 
 const Upload = () => {
   const { fs, ai, kv } = usePuterStore();
@@ -24,13 +25,11 @@ const Upload = () => {
     companyName,
     jobTitle,
     jobDescription,
-    AIResponseFormat
     file,
   }: {
     companyName: string;
     jobTitle: string;
     jobDescription: string;
-    AIResponseFormat: any;
     file: File;
   }) => {
     setIsProcessing(true);
@@ -38,7 +37,7 @@ const Upload = () => {
 
     const uploadFile = await fs.upload([file]);
 
-    if (!uploadFile) {
+    if (!uploadFile || uploadFile.length === 0) {
       setStatusText("File upload failed. Please try again.");
       setIsProcessing(false);
       return;
@@ -46,9 +45,9 @@ const Upload = () => {
 
     setStatusText("Converting to image...");
 
-    const imageFile = await fs.convertPdfToImage(file);
+    const imageFile = await convertPdfToImage(file);
 
-    if (!imageFile.file) {
+    if (!imageFile?.file) {
       setStatusText("Failed to convert PDF to image.");
       setIsProcessing(false);
       return;
@@ -58,7 +57,7 @@ const Upload = () => {
 
     const uploadImage = await fs.upload([imageFile.file]);
 
-    if (!uploadImage) {
+    if (!uploadImage || uploadImage.length === 0) {
       setStatusText("Error uploading image.");
       setIsProcessing(false);
       return;
@@ -68,16 +67,15 @@ const Upload = () => {
 
     const uuid = generateUUID();
 
-  const data = {
-  id: uuid,
-  resumePath: uploadFile[0].path,
-  imagePath: uploadImage[0].path,
-  companyName,
-  jobTitle,
-  jobDescription,
-  AIResponseFormat,
-  feedback: null as any,
-};
+    const data = {
+      id: uuid,
+      resumePath: uploadFile[0].path,
+      imagePath: uploadImage[0].path,
+      companyName,
+      jobTitle,
+      jobDescription,
+      feedback: null as any,
+    };
 
     await kv.set(`resume:${uuid}`, JSON.stringify(data));
 
@@ -89,7 +87,6 @@ const Upload = () => {
         companyName,
         jobTitle,
         jobDescription,
-        AIResponseFormat
       })
     );
 
@@ -99,12 +96,19 @@ const Upload = () => {
       return;
     }
 
-    const feedbackText =
-      typeof feedback.message.content === "string"
-        ? feedback.message.content
-        : feedback.message.content[0].text;
+   const feedbackText =
+  typeof feedback.message.content === "string"
+    ? feedback.message.content
+    : feedback.message.content[0]?.text || "";
 
-    data.feedback = JSON.parse(feedbackText);
+try {
+  data.feedback = JSON.parse(feedbackText);
+} catch (error) {
+  console.log("JSON Parse Error", error);
+  setStatusText("AI response invalid");
+  setIsProcessing(false);
+  return;
+}
 
     await kv.set(`resume:${uuid}`, JSON.stringify(data));
 
