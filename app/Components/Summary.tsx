@@ -1,4 +1,5 @@
 import ScoreGauge from "~/Components/ScoreGauge";
+import ScoreBadge from "~/Components/ScoreBadge";
 
 type SummaryProps = {
   feedback: Feedback;
@@ -12,18 +13,21 @@ const textColor = score >  70 ? 'text-green-600':score > 49 ? 'text-yellow-600' 
 
   return (
     <div className="resume-summary">
-      <div className="category">
-        <div className="flex-flex row gap-2 items-center
-        <p className="text-2xl">
-          <span className={textColor}>
-         {score} </span>/100
-       {title} 
+     <div className="flex flex-col gap-2">
+  <p className="text-2xl">{title}</p>
+
+  <ScoreBadge score={score} />
+   </div>
+          
+       <p>
+          <span className={textColor}>  {score} </span>/100
+     
         </p>
 
- - {score}
+
       </div>
      
-    </div>
+  
   );
 };
 

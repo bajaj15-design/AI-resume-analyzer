@@ -68,6 +68,8 @@ const Resume = () => {
 
 
       setFeedback(data.feedback);
+      console.log("Feedback:", data.feedback);
+console.log("ATS:", data.feedback?.ATS);
     };
 
 
